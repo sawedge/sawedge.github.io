@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>Card Frequency Analysis</title>
+
+        <!-- Bootstrap Core CSS -->
+        <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="./theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="./theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="Online Poker Card Frequency Analysis In 2009, "David B" from HandHQ.com published ~80GB of online poker hand histories, which is still ...">
+
+        <meta name="author" content="Seamus Wedge">
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Seamus Wedge">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="./author/seamus-wedge.html">
+	<meta property="og:url" content="./card-frequency-analysis.html">
+	<meta property="og:title" content="Card Frequency Analysis">
+	<meta property="article:published_time" content="2016-11-29 00:00:00-06:00">
+            <meta property="og:description" content="Online Poker Card Frequency Analysis In 2009, "David B" from HandHQ.com published ~80GB of online poker hand histories, which is still ...">
+
+            <meta property="og:image" content="./theme/images/post-bg.jpg">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="./">Seamus Wedge</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="./pages/about-daniel-rodriguez.html">About | Daniel Rodriguez</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('./theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Card Frequency Analysis</h1>
+                        <span class="meta">Posted by
+                                <a href="./author/seamus-wedge.html">Seamus Wedge</a>
+                             on Tue 29 November 2016
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <h1>Online Poker Card Frequency Analysis</h1>
+<p>In 2009, "David B" from HandHQ.com published ~80GB of online poker hand histories, which is still available through a roundabout link:</p>
+<p>http://web.archive.org/web/20110205042259/http://www.outflopped.com/questions/286/obfuscated-datamined-hand-histories</p>
+<p>The hand histories are from a number of sites in July 2009, which is after passage of the Unlawful Internet Gambling Act of 2006, which curtailed much of the online poker boom experienced earlier in the decade. There's a lot to explore here, so we can split this into a few posts. Some interesting questions we can tackle, though:</p>
+<ul>
+    <li>Do cards appear with equal frequencies on the board? Between sites?</li>
+    <li>What starting cards are most profitable?</li>
+    <li>How do starting cards change as the limits change?</li>
+<ul>
+
+Are we clear on the rules for No-limit Hold 'em? In case a refresher is needed, I'll let Matt Damon explain the game:
+
+
+
+wzxhzdk:0
+
+
+
+
+
+
+        <iframe
+            width="400"
+            height="300"
+            src="https://www.youtube.com/embed/xvbYMsKKzmc"
+            frameborder="0"
+            allowfullscreen
+        ></iframe>
+
+
+
+
+Just looking at the Party Poker data, we get 7300 text files, totalling 7.5GB.
+
+There's a treasure trove of data here, but let's start with a simple analysis on card frequencies. My initial guess is that cards would appear on the board with relatively equal frequencies. Hands shown after play would tend to have higher values, I think. Are there differences between sites, though? Let's find out.
+
+### Housekeeping
+
+
+
+wzxhzdk:1
+
+
+
+
+wzxhzdk:2
+
+
+## Data Extraction
+
+Different sites have different file formats, so we will just handle Party Poker now and see what kind of results come up. The following code loops through all 'pty' files in the data directory, and grabs the exposed cards with a regular expression. Differences in flop, turn, river, and held cards might be interesting, so they will be stored in separate counters.
+
+For party poker, a hand history looks like this:
+
+`Game #16406819654 starts.`
+
+`#Game No : 16406819654 
+***** Hand History for Game 16406819654 *****
+$600 USD NL Texas Hold'em - Wednesday, July 01, 00:34:23 EDT 2009
+Table Jackpot #1304203 (No DP) (Real Money)
+Seat 3 is the button
+Total number of players : 3 
+Seat 5: yt9vbe/p4u92rlWxl6upmQ ( $600 USD )
+Seat 3: 7HcrB/J1cuJa17+RxWPsMg ( $603.50 USD )
+Seat 4: 2SLu1ssuoTUOcnciv0y6Pw ( $632.90 USD )
+2SLu1ssuoTUOcnciv0y6Pw posts small blind [$3 USD].
+yt9vbe/p4u92rlWxl6upmQ posts big blind [$6 USD].
+** Dealing down cards **
+7HcrB/J1cuJa17+RxWPsMg raises [$12 USD]
+2SLu1ssuoTUOcnciv0y6Pw folds
+yt9vbe/p4u92rlWxl6upmQ calls [$6 USD]
+** Dealing Flop ** [ Qc, 7d, Kh ]
+yt9vbe/p4u92rlWxl6upmQ checks
+7HcrB/J1cuJa17+RxWPsMg checks
+** Dealing Turn ** [ Kd ]
+yt9vbe/p4u92rlWxl6upmQ bets [$20 USD]
+7HcrB/J1cuJa17+RxWPsMg calls [$20 USD]
+** Dealing River ** [ 3c ]
+yt9vbe/p4u92rlWxl6upmQ bets [$44 USD]
+7HcrB/J1cuJa17+RxWPsMg raises [$99 USD]
+yt9vbe/p4u92rlWxl6upmQ calls [$55 USD]
+7HcrB/J1cuJa17+RxWPsMg shows [ Tc, Ts ]two pairs, Kings and Tens.
+yt9vbe/p4u92rlWxl6upmQ shows [ Ks, 6s ]three of a kind, Kings.
+The time at which hand ended:Jul 01 2009 00:35 EDT
+yt9vbe/p4u92rlWxl6upmQ wins $264 USD from the main pot with three of a kind, Kings.`
+
+
+
+wzxhzdk:3
+
+
+
+
+wzxhzdk:4
+
+
+
+
+wzxhzdk:5
+
+
+
+
+
+    [('AK', 90184),
+     ('AQ', 74293),
+     ('AA', 62700),
+     ('AJ', 62023),
+     ('KK', 61229),
+     ('QQ', 58296),
+     ('KQ', 55271),
+     ('JJ', 53547),
+     ('AT', 48732),
+     ('TT', 48326),
+     ('KJ', 44809),
+     ('99', 43522),
+     ('QJ', 40130),
+     ('88', 39626),
+     ('77', 35801),
+     ('KT', 32930),
+     ('JT', 32889),
+     ('66', 32654),
+     ('AKs', 31867),
+     ('A9', 30841),
+     ('QT', 30697),
+     ('55', 29923),
+     ('AQs', 27694),
+     ('44', 27427),
+     ('A8', 26230),
+     ('33', 25552),
+     ('AJs', 25410),
+     ('22', 23668),
+     ('KQs', 23508),
+     ('A7', 23182),
+     ('ATs', 22720),
+     ('T9', 21025),
+     ('KJs', 20974),
+     ('A5', 20840),
+     ('QJs', 20584),
+     ('A6', 20382),
+     ('JTs', 19336),
+     ('A4', 19083),
+     ('A9s', 18370),
+     ('J9', 18249)]
+
+
+
+## Data Analysis
+
+First, let's take a look at the most common card and their frequencies:
+
+
+
+wzxhzdk:6
+
+
+    [('2s', 277795), ('3c', 277465), ('2h', 277445), ('2c', 277395), ('2d', 277284), ('3s', 276940), ('3h', 276831), ('3d', 276726), ('6d', 276475), ('4d', 276334)]
+
+
+Remarkably similar counts, and a lot of low cards in the top 10! Interesting. This probably makes sense, though. You'd only see the flop when more than one person decides to proceed with their hand, and this would usually occur when higher cards are in player's hands. Looking at all the frequencies:
+
+
+
+wzxhzdk:7
+
+
+    [('2s', 277795), ('3c', 277465), ('2h', 277445), ('2c', 277395), ('2d', 277284), ('3s', 276940), ('3h', 276831), ('3d', 276726), ('6d', 276475), ('4d', 276334), ('4c', 275870), ('4h', 275679), ('6s', 275664), ('5h', 275581), ('5s', 275321), ('4s', 275198), ('6c', 275014), ('5c', 274783), ('5d', 274709), ('6h', 274630), ('8d', 274164), ('7s', 273856), ('8s', 273701), ('7h', 273398), ('8h', 273370), ('7d', 273268), ('9c', 273149), ('7c', 273049), ('9d', 273020), ('8c', 272769), ('Qd', 272256), ('9h', 272051), ('Js', 271918), ('Qs', 271780), ('Tc', 271768), ('9s', 271734), ('Ks', 271498), ('Jc', 271481), ('Qc', 271298), ('Ts', 271112), ('Jh', 271018), ('Td', 270868), ('Th', 270805), ('Kh', 270650), ('Qh', 270638), ('Kd', 270508), ('Kc', 270454), ('Jd', 270307), ('Ad', 267424), ('Ah', 266158), ('As', 265896), ('Ac', 265769)]
+
+
+We see that all four aces have the lowest frequencies, so there's definitely an order based on the strength of a card.
+
+Let's look at the distribution through a heatmap
+
+
+
+wzxhzdk:8
+
+
+
+
+wzxhzdk:9
+
+
+
+
+wzxhzdk:10
+
+
+
+![png](Card%20Frequency%20Analysis_files/Card%20Frequency%20Analysis_22_0.png)
+
+
+
+
+wzxhzdk:11
+
+
+
+![png](Card%20Frequency%20Analysis_files/Card%20Frequency%20Analysis_23_0.png)
+
+
+
+
+wzxhzdk:12
+
+
+
+![png](Card%20Frequency%20Analysis_files/Card%20Frequency%20Analysis_24_0.png)
+
+
+
+
+wzxhzdk:13
+
+
+
+![png](Card%20Frequency%20Analysis_files/Card%20Frequency%20Analysis_25_0.png)
+
+
+
+
+wzxhzdk:14
+
+
+
+![png](Card%20Frequency%20Analysis_files/Card%20Frequency%20Analysis_26_0.png)
+
+
+Wow, so the ranks for shown cards makes complete sense, but I have to admit I was a bit surprised how well it came out. A heatmap separated by suit is probably the wrong visualization for this type of data.
+
+
+
+wzxhzdk:15
+
+
+## Starters
+
+
+
+wzxhzdk:16
+
+
+
+
+wzxhzdk:17
+
+
+    31867
+    90184
+
+
+
+
+wzxhzdk:18
+
+
+
+
+
+    array([[ 16820.,   7258.,   5675.,   5133.,   4489.,   4182.,   3960.,
+              4193.,   4031.,   4563.,   4829.,   5255.,  23668.],
+           [ 17844.,   7790.,   5898.,   5376.,   4657.,   4381.,   4292.,
+              4508.,   4986.,   5669.,   6661.,  25552.,   4898.],
+           [ 19083.,   8260.,   6263.,   5508.,   4876.,   4616.,   4925.,
+              5230.,   6375.,   8682.,  27427.,   7232.,   4311.],
+           [ 20840.,   8944.,   6906.,   6104.,   5429.,   5105.,   5913.,
+              7392.,  10156.,  29923.,   9918.,   5920.,   4072.],
+           [ 20382.,   9771.,   7574.,   6398.,   6176.,   7187.,   8542.,
+             12098.,  32654.,  11790.,   7019.,   4598.,   3139.],
+           [ 23182.,  11334.,   8523.,   7972.,   8153.,   9993.,  13975.,
+             35801.,  13217.,   8264.,   4949.,   3513.,   2877.],
+           [ 26230.,  13045.,  11079.,  12073.,  12218.,  16290.,  39626.,
+             14257.,   9266.,   6086.,   4014.,   3031.,   2918.],
+           [ 30841.,  18238.,  16457.,  18249.,  21025.,  43522.,  15489.,
+             10674.,   7161.,   4540.,   3563.,   3158.,   2815.],
+           [ 48732.,  32930.,  30697.,  32889.,  48326.,  16868.,  11790.,
+              8519.,   5567.,   4214.,   3732.,   3464.,   3426.],
+           [ 62023.,  44809.,  40130.,  53547.,  19336.,  13993.,  10371.,
+              7341.,   5362.,   4969.,   4252.,   4208.,   3945.],
+           [ 74293.,  55271.,  58296.,  20584.,  17536.,  12594.,   9400.,
+              7300.,   6124.,   5834.,   5336.,   5051.,   4755.],
+           [ 90184.,  61229.,  23508.,  20974.,  18044.,  12893.,  10181.,
+              9147.,   8050.,   7575.,   7270.,   6754.,   6352.],
+           [ 62700.,  31867.,  27694.,  25410.,  22720.,  18370.,  17238.,
+             16348.,  15038.,  15762.,  15120.,  14570.,  13996.]])
+
+
+
+
+
+wzxhzdk:19
+
+
+
+![png](Card%20Frequency%20Analysis_files/Card%20Frequency%20Analysis_33_0.png)
+
+
+
+
+wzxhzdk:20
+
+
+
+
+
+    66363
+
+
+
+
+
+wzxhzdk:21
+
+
+
+
+wzxhzdk:22
+
+
+
+
+wzxhzdk:23
+
+
+
+
+wzxhzdk:24
+
+
+
+
+wzxhzdk:25
+
+
+
+![png](Card%20Frequency%20Analysis_files/Card%20Frequency%20Analysis_39_0.png)
+
+
+
+
+wzxhzdk:26
+
+
+
+
+wzxhzdk:27
+
+
+
+
+
+    Counter({'2c': 200731,
+             '2d': 200559,
+             '2h': 200565,
+             '2s': 200970,
+             '3c': 200596,
+             '3d': 200368,
+             '3h': 200079,
+             '3s': 200345,
+             '4c': 199591,
+             '4d': 200055,
+             '4h': 199484,
+             '4s': 199082,
+             '5c': 198796,
+             '5d': 198532,
+             '5h': 199107,
+             '5s': 199269,
+             '6c': 199013,
+             '6d': 199807,
+             '6h': 198546,
+             '6s': 199573,
+             '7c': 197807,
+             '7d': 197392,
+             '7h': 197592,
+             '7s': 198215,
+             '8c': 197350,
+             '8d': 198185,
+             '8h': 197796,
+             '8s': 197952,
+             '9c': 197377,
+             '9d': 197372,
+             '9h': 196500,
+             '9s': 196621,
+             'Ac': 192198,
+             'Ad': 193363,
+             'Ah': 192436,
+             'As': 192300,
+             'Jc': 196356,
+             'Jd': 195240,
+             'Jh': 196089,
+             'Js': 196800,
+             'Kc': 195698,
+             'Kd': 195557,
+             'Kh': 195700,
+             'Ks': 196098,
+             'Qc': 196224,
+             'Qd': 196893,
+             'Qh': 195726,
+             'Qs': 196674,
+             'Tc': 196489,
+             'Td': 196147,
+             'Th': 196217,
+             'Ts': 195876})
+
+
+
+
+
+wzxhzdk:28
+    </article>
+
+
+    <hr>
+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://github.com/sawedge">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-another social link fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="./theme/js/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="./theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="./theme/js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

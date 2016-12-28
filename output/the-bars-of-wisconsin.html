@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>The Bars of Wisconsin</title>
+
+        <!-- Bootstrap Core CSS -->
+        <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="./theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="./theme/css/code_blocks/monokai.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="I know, I know... it's a population map, but anyone that has been to Wisconsin knows this is an apt way to describe the population of ...">
+
+        <meta name="author" content="Seamus Wedge">
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Seamus Wedge">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="./author/seamus-wedge.html">
+	<meta property="og:url" content="./the-bars-of-wisconsin.html">
+	<meta property="og:title" content="The Bars of Wisconsin">
+	<meta property="article:published_time" content="2016-12-06 01:30:00-06:00">
+            <meta property="og:description" content="I know, I know... it's a population map, but anyone that has been to Wisconsin knows this is an apt way to describe the population of ...">
+
+            <meta property="og:image" content=".//images/barsheader.jpg">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="./">Seamus Wedge</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="./pages/about-seamus-wedge.html">About | Seamus Wedge</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('/images/barsheader.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>The Bars of Wisconsin</h1>
+                        <span class="meta">Posted by
+                                <a href="./author/seamus-wedge.html">Seamus Wedge</a>
+                             on Tue 06 December 2016
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p><img alt="The bars of Wisconsin" src="/images/barsofwisconsin-final.png" /></p>
+<p>I know, I know... <a href="https://xkcd.com/1138/" target="_blank">it's a population map</a>, but anyone that has been to Wisconsin knows this is an apt way to describe the population of Wisconsin.</p>
+<p>A blog has to start somewhere. In the future, I hope to showcase interesting, provocative, or educational data analyses. For now, this is just a recent fun project. The goal was to replicate <a href="http://ramiro.org/notebook/mapping-pubs/">this map of UK bars</a>, but the methods I used ended up being very different. </p>
+<h2>Overview</h2>
+<p>To get a list of bars with their geographic coordinates, I explored a couple of options, but eventually landed on scraping the information from yellowpages.com. There seemed to be more search results than the other options like Yelp. Since I'm not aware of any "official" list of bars in Wisconsin or any other state, this will have to do, and since missing or inaccurate entries won't have any great impact, this seemed like a good solution.</p>
+<p><img alt="Searching for taverns near Wisconsin" src="/images/tavernsearch.png" /></p>
+<p>Simply searching "taverns" and "Wisconsin" returned about 6,300 results, so it seemed comprehensive. Unfortunately, the first roadblock came when page 101 and every page thereafter simply displayed the results from page 100. I guess broad searches are tolerated only up to a point. The geographic search area needed to be smaller, so I decided to search by ZIP code. This introduced duplicate results, but those could be removed leter. I saved a list of ZIP codes to csv for use in the scraper.</p>
+<p>How to grab latitude and longitude? This took some digging in the HTML, but yellowpages.com sends latitude and longitude information to the Google Maps API to create the map that shows on their search results. I was able to pull these coordinates out of the javascript on the webpage.</p>
+<p>So those are the pieces for getting this data. Now it's just putting it together. </p>
+<h2>Web Scraping</h2>
+<p>The scraping was done with Beautiful Soup </p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="c1"># import a downloaded list of Wisconsin ZIP codes</span>
+<span class="n">zips</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;WI Zips.csv&#39;</span><span class="p">)[</span><span class="s1">&#39;ZIP Code&#39;</span><span class="p">]</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Just a couple helper functions. One issue to take care of was extracting geo coordinates from the javascript.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_yp_url</span><span class="p">(</span><span class="n">zipcode</span><span class="p">,</span> <span class="n">page</span><span class="p">):</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://www.yellowpages.com/search?search_terms=taverns&amp;geo_location_terms={}&amp;page={}&#39;</span>
+    <span class="k">return</span> <span class="n">url</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">zipcode</span><span class="p">),</span> <span class="n">page</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_coords_from_javascript</span><span class="p">(</span><span class="n">scripts</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    :param scripts: list of javascript blocks from webpage</span>
+<span class="sd">    :return: List of geographic coordinates</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">locs</span><span class="o">=</span><span class="p">[]</span> <span class="c1"># List of locations to be returned</span>
+
+    <span class="c1"># Regex to find the javascript with lat/long information</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">r&#39;YPU = (.*?);&#39;</span><span class="p">)</span> 
+
+    <span class="k">for</span> <span class="n">script</span> <span class="ow">in</span> <span class="n">scripts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">string</span><span class="p">)))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">script</span><span class="o">.</span><span class="n">string</span><span class="p">))</span>
+            <span class="n">down</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">locs</span> <span class="o">=</span> <span class="n">down</span><span class="p">[</span><span class="s1">&#39;expandedMapListings&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span> <span class="k">break</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">locs</span>
+</pre></div>
+
+
+<p>The container for writing our data to csv:</p>
+<div class="highlight"><pre><span></span><span class="n">writefile</span> <span class="o">=</span> <span class="s1">&#39;Wisconsin_lat_long.csv&#39;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">writefile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f1</span><span class="p">:</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">lineterminator</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>And then there are two loops. We loop through each ZIP code, doing a search, and loop through all the returned pages. Latitudes and longitudes are pulled out the javascript from the webpage. We add a time delay for slightly more responsible web scraping, and let it run.</p>
+<div class="highlight"><pre><span></span>    <span class="k">for</span> <span class="n">zipcode</span> <span class="ow">in</span> <span class="n">zips</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">30</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">get_yp_url</span><span class="p">(</span><span class="n">zipcode</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+            <span class="n">s</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Get all javascript blocks from page</span>
+            <span class="n">scripts</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">)</span>
+
+            <span class="n">locs</span> <span class="o">=</span> <span class="n">get_coords_from_javascript</span><span class="p">(</span><span class="n">scripts</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">break</span>
+
+            <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">locs</span><span class="p">:</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;zip&#39;</span><span class="p">],</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]])</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;zip&#39;</span><span class="p">],</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">])</span>
+
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{}------------------{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zipcode</span><span class="p">,</span> <span class="n">page</span><span class="p">))</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Data Cleaning and Plotting</h2>
+<p>Now that we have a csv with geographic information, we can remove the duplicates and create a plot. </p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;wisconsin_lat_long.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;windows-1252&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Zip&#39;</span><span class="p">,</span><span class="s1">&#39;Lat&#39;</span><span class="p">,</span> <span class="s1">&#39;Long&#39;</span><span class="p">])</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1">#Only take true WI ZIP codes</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">Zip</span><span class="o">&gt;</span><span class="mi">53000</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Zip</span><span class="o">&lt;</span><span class="mi">55000</span><span class="p">)]</span>
+<span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">Lat</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Plotting took some fiddling before I had something I was happy with. I wanted to create a gradient effect for each point, and I wanted the rural taverns to show up without urban areas becoming a big oversaturated messes. I cheated to get the gradient effect, plotting multiple times with different alphas and sizes. </p>
+<div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span><span class="mi">120</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="s1">&#39;111&#39;</span><span class="p">,</span> <span class="n">axisbg</span> <span class="o">=</span> <span class="s2">r&quot;#203731&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Long</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Lat</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">3</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">r&#39;#FFB612&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Long</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Lat</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">5</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">135</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">r&#39;#FFB612&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Long</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Lat</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">7</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">r&#39;#FFB612&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Long</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Lat</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">9</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">r&#39;#FFB612&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Long</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">Lat</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">10</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">r&#39;#FFFFFF&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">94</span><span class="p">,</span><span class="o">-</span><span class="mi">86</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span><span class="mi">47</span><span class="p">])</span>
+</pre></div>
+
+
+<p><img alt="Bars of Wisconsin" src="/images/barsofwisconsin-final.png" /></p>
+<p>Of course the colors had to be green and gold. With a simple banner at the bottom in Photoshop, I think it turned out nice. Certainly not every state would be recognizable from a map of its bars.</p>
+    </article>
+
+
+    <hr>
+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://github.com/sawedge">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-another social link fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="./theme/js/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="./theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="./theme/js/clean-blog.min.js"></script>
+
+</body>
+
+</html>
