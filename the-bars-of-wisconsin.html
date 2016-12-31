@@ -103,15 +103,15 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
     <!-- Post Content -->
     <article>
-        <p><img alt="The bars of Wisconsin" src="/images/barsofwisconsin-final.png" /></p>
-<p><em>Plotting the locations of every bar in Wisconsin.</em> </p>
+        <p><em>Plotting the locations of every bar in Wisconsin.</em> </p>
+<p><img alt="The bars of Wisconsin" src="/images/barsofwisconsin-final.png" /></p>
 <p>I know, I know... <a href="https://xkcd.com/1138/" target="_blank">it's a population map</a>, but anyone that has been to Wisconsin knows this is an apt way to describe the population of Wisconsin.</p>
 <p>A blog has to start somewhere. In the future, I'll hope to show interesting, provocative, or educational data analyses, but for now, this is just a recent fun project. My goal was to make something similar to <a href="http://ramiro.org/notebook/mapping-pubs/" target="_blank">this map of UK bars</a>. </p>
 <h2>Data Sourcing</h2>
 <p>To get a list of bars and their coordinates, I eventually landed on scraping the information from yellowpages.com. The search results seemed to be more complete than other options like the Yelp API. I was okay with the occasional missing or inaccurate entry, and lacking an "official" list of bars in Wisconsin, this approach would have to suffice.</p>
 <p><img alt="Searching for taverns near Wisconsin" src="/images/tavernsearch.png" /></p>
-<p>A simple search of "taverns" and "Wisconsin" returned about 6,300 results, so it seemed like a good list. Unfortunately, the first roadblock came when every page after 100 simply displayed the results from page 100. I guess broad searches are tolerated only up to a point. The geographic search area needed to be smaller, so I decided to search systematically by ZIP code. Of course this introduced duplicate results, but those were removed later. </p>
-<p>Getting the latitude and longitude took some digging, but the information was there in the HTML. I was able to pull the coordinates out of the javascript for the Google Maps API. </p>
+<p>A simple search of "taverns" and "Wisconsin" returned about 6,300 results, so it seemed like I'd have a good list. Unfortunately, the first roadblock came when every page after 100 simply displayed the results from page 100. I guess broad searches are tolerated only up to a point. The geographic search area needed to be smaller, so I decided to search systematically by ZIP code. Of course this introduced duplicate results, but those were removed later. </p>
+<p>Getting the latitude and longitude took some digging, but the information was there in the HTML, sent to Google to create the map you see above. I was able to pull the coordinates out of the javascript. </p>
 <h2>Web Scraping</h2>
 <p>The scraping was done with Beautiful Soup.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
@@ -165,7 +165,7 @@
 </pre></div>
 
 
-<p>And then I loop through each ZIP code, performing a search, and loop  through all the returned pages. Latitudes and longitudes were pulled out the javascript, written to csv, and a time delay was added for slightly more responsible web scraping.</p>
+<p>And then I loop through each ZIP code, performing a search, and go through all the returned pages. Latitudes and longitudes are written to csv, and I added a time delay for slightly more responsible web scraping.</p>
 <div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">zipcode</span> <span class="ow">in</span> <span class="n">zips</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">30</span><span class="p">):</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">get_yp_url</span><span class="p">(</span><span class="n">zipcode</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
@@ -190,6 +190,7 @@
 </pre></div>
 
 
+<p>It's not an efficient way to get the data by any means, but it got the job done.</p>
 <h2>Data Cleaning and Plotting</h2>
 <p>Now that I had a csv with geographic information, there were only a couple more steps. The data had missing values and plenty of duplicates:</p>
 <table>
@@ -289,6 +290,7 @@
 </tr>
 </tbody>
 </table>
+<p>I also filtered the results by legitimate Wisconsin ZIP codes, since some sneaky bars in Minnesota and Illinois were trying to get in.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
@@ -305,7 +307,13 @@
 </pre></div>
 
 
-<p>Once the data was clean, the plotting took some fiddling before I had something I was happy with. I only had a few requirements: the colors had to be green and gold (naturally), I wanted to create a gradient effect for each point, and I wanted the rural taverns to be visible without the urban areas becoming over-saturated messes. I "cheated" to get the gradient effect by plotting multiple times with different alphas and sizes. I didn't project to map, just Cartesian coordinates, but the distortion on the final image doesn't look too egregious.</p>
+<p>Once the data was clean, I fiddled with plotting for quite a while before I had something I was happy with. I only had a few requirements: </p>
+<ul>
+<li>The colors had to be green and gold (naturally)</li>
+<li>I wanted a gradient effect for each point</li>
+<li>I wanted the rural taverns to be visible without the urban areas becoming over-saturated messes. </li>
+</ul>
+<p>I ended up "cheating" to get the gradient by plotting multiple times with different transparencies and point sizes. I also could have improved the final product by using an actual map projection, but the distortion doesn't look too egregious to my eyes.</p>
 <div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span><span class="mi">120</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="s1">&#39;111&#39;</span><span class="p">,</span> <span class="n">axisbg</span> <span class="o">=</span> <span class="s2">r&quot;#203731&quot;</span><span class="p">)</span>
 
@@ -321,7 +329,7 @@
 
 
 <p><img alt="Bars of Wisconsin" src="/images/barsofwisconsin-final.png" /></p>
-<p>And there we have it. For the finishing touches I added a simple banner in Photoshop. I think it turned out pretty nice. I'm certain that not every state would be recognizable from a map of its bars. Next step, I need to get this printed and on my wall!</p>
+<p>And there we have it. For the finishing touches I added a simple banner in Photoshop. I think it turned out pretty nice, and I think it will look great on canvas, maybe in my basement. I'm certain that not every state would be recognizable from a map of its bars. Next step, I need to get this printed and on my wall!</p>
 <p>The code is available <a href="https://github.com/sawedge/barsofwisconsin" target="_blank">here</a>.</p>
     </article>
 
